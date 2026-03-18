@@ -12,7 +12,7 @@ import { PokemonApiService } from '../../../core/services/pokemon-api.service';
       <img [src]="iconUrl()" [alt]="type().name" width="80" />
     } @else if (loading()) {
       <div
-        class="h-4 w-4 animate-spin rounded-full border-2 border-slate-500 border-t-emerald-400"
+        class="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 dark:border-slate-500 border-t-emerald-500 dark:border-t-emerald-400"
       ></div>
     }
   `,

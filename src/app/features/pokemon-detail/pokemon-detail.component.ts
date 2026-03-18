@@ -7,6 +7,7 @@ import { PokemonMovesComponent } from './components/pokemon-moves.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
 import { PokemonStatsComponent } from './components/pokemon-stats.component';
 import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -17,17 +18,23 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
     PokemonStatsComponent,
     PokemonAudioComponent,
     PokemonMovesComponent,
+    ThemeToggleComponent,
     DecimalPipe,
   ],
   template: `
     <div
-      class="min-h-screen bg-slate-900 bg-gradient-to-b from-slate-900 to-slate-950 px-4 py-8 text-slate-200 sm:px-6 lg:px-8"
+      class="min-h-screen bg-slate-50 dark:bg-slate-900 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 px-4 py-8 text-slate-800 dark:text-slate-200 sm:px-6 lg:px-8 transition-colors duration-300 relative"
     >
+      <!-- Theme Toggle -->
+      <div class="absolute top-6 right-6 lg:top-8 lg:right-8 z-50">
+        <app-theme-toggle></app-theme-toggle>
+      </div>
+
       <div class="mx-auto max-w-6xl">
         <!-- Back Navigation -->
         <button
           (click)="goBack()"
-          class="group mb-8 flex items-center gap-2 text-slate-400 transition-colors hover:text-emerald-400"
+          class="group mb-8 flex items-center gap-2 text-slate-500 dark:text-slate-400 transition-colors hover:text-emerald-500 dark:hover:text-emerald-400 relative z-10"
         >
           <svg
             class="h-5 w-5 transform transition-transform group-hover:-translate-x-1"
@@ -56,10 +63,10 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
           </div>
         } @else if (error()) {
           <div
-            class="mx-auto max-w-lg rounded-2xl border border-red-800/50 bg-red-900/20 p-6 text-center text-red-400 shadow-xl backdrop-blur"
+            class="mx-auto max-w-lg rounded-2xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 p-6 text-center text-red-600 dark:text-red-400 shadow-xl backdrop-blur transition-colors duration-300"
           >
             <svg
-              class="mx-auto mb-4 h-12 w-12 text-red-500/80"
+              class="mx-auto mb-4 h-12 w-12 text-red-500 dark:text-red-500/80"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -72,10 +79,10 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
               />
             </svg>
             <h2 class="mb-2 text-2xl font-bold">Something went wrong</h2>
-            <p class="text-slate-300">{{ error() }}</p>
+            <p class="text-slate-600 dark:text-slate-300">{{ error() }}</p>
             <button
               (click)="goBack()"
-              class="mt-6 rounded-xl border border-slate-700 bg-slate-800 px-6 py-2.5 font-medium text-white transition-all hover:border-slate-600 hover:bg-slate-700"
+              class="mt-6 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2.5 font-medium text-slate-700 dark:text-white transition-all hover:bg-slate-50 dark:hover:border-slate-600 dark:hover:bg-slate-700 shadow-sm"
             >
               Return Home
             </button>
@@ -83,7 +90,7 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
         } @else if (pokemon()) {
           <!-- Header Card -->
           <div
-            class="relative mb-8 overflow-hidden rounded-[2rem] border border-slate-700/80 bg-slate-800/60 p-8 shadow-2xl backdrop-blur-md"
+            class="relative mb-8 overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-8 shadow-2xl backdrop-blur-md transition-colors duration-300"
           >
             <!-- Decorative background glows -->
             <div
@@ -98,11 +105,11 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
             >
               <div class="flex flex-col items-center gap-4 md:items-start">
                 <div class="flex items-center gap-4">
-                  <span class="font-mono text-2xl tracking-wider text-emerald-400/80"
+                  <span class="font-mono text-2xl tracking-wider text-emerald-600/80 dark:text-emerald-400/80"
                     >#{{ pokemon()!.id | number: '3.0-0' }}</span
                   >
                   <h1
-                    class="bg-gradient-to-br from-white to-slate-400 bg-clip-text text-5xl font-extrabold text-transparent capitalize drop-shadow-sm md:text-6xl"
+                    class="bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-5xl font-extrabold text-transparent capitalize drop-shadow-sm md:text-6xl transition-colors duration-300"
                   >
                     {{ pokemon()!.name }}
                   </h1>

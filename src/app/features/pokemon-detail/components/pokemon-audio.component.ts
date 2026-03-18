@@ -9,14 +9,14 @@ import { Component, input, signal } from '@angular/core';
     <button
       (click)="playAudio()"
       [disabled]="isPlaying()"
-      class="group rounded-full border border-emerald-500/30 bg-emerald-500/20 p-4 text-emerald-400 shadow-lg shadow-emerald-500/20 transition-all hover:animate-pulse hover:bg-emerald-500/30 hover:text-emerald-300 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none disabled:opacity-50"
+      class="group rounded-full border border-emerald-500/30 bg-emerald-100 dark:bg-emerald-500/20 p-4 text-emerald-600 dark:text-emerald-400 shadow-lg shadow-emerald-500/20 transition-all hover:animate-pulse hover:bg-emerald-200 dark:hover:bg-emerald-500/30 hover:text-emerald-700 dark:hover:text-emerald-300 focus:ring-2 focus:ring-emerald-500/50 focus:outline-none disabled:opacity-50"
       title="Play Cry"
     >
       @if (isPlaying()) {
         <div class="flex h-8 w-8 items-center justify-center space-x-1">
-          <div class="h-4 w-1 animate-bounce bg-emerald-400" style="animation-delay: 0s"></div>
-          <div class="h-6 w-1 animate-bounce bg-emerald-400" style="animation-delay: 0.1s"></div>
-          <div class="h-4 w-1 animate-bounce bg-emerald-400" style="animation-delay: 0.2s"></div>
+          <div class="h-4 w-1 animate-bounce bg-emerald-500 dark:bg-emerald-400" style="animation-delay: 0s"></div>
+          <div class="h-6 w-1 animate-bounce bg-emerald-500 dark:bg-emerald-400" style="animation-delay: 0.1s"></div>
+          <div class="h-4 w-1 animate-bounce bg-emerald-500 dark:bg-emerald-400" style="animation-delay: 0.2s"></div>
         </div>
       } @else {
         <svg

@@ -27,7 +27,7 @@ import { FormsModule } from '@angular/forms';
         type="search"
         [ngModel]="query()"
         (ngModelChange)="queryChange.emit($event)"
-        class="block w-full rounded-2xl border border-slate-700 bg-slate-800/80 p-4 pl-10 text-sm text-white placeholder-slate-400 shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:shadow-blue-500/20 focus:ring-blue-500"
+        class="block w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 p-4 pl-10 text-sm text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:shadow-blue-500/20 focus:ring-blue-500"
         placeholder="Search Pokémon by name or ID..."
         required
       />

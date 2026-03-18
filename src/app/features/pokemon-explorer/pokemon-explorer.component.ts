@@ -4,23 +4,29 @@ import { PokemonStateService } from '../../core/services/pokemon-state.service';
 import { PokemonPaginationComponent } from './components/pokemon-pagination.component';
 import { PokemonSearchComponent } from './components/pokemon-search.component';
 import { PokemonTableComponent } from './components/pokemon-table.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
 @Component({
   selector: 'app-pokemon-explorer',
   standalone: true,
-  imports: [PokemonSearchComponent, PokemonTableComponent, PokemonPaginationComponent],
+  imports: [PokemonSearchComponent, PokemonTableComponent, PokemonPaginationComponent, ThemeToggleComponent],
   template: `
     <div
-      class="min-h-screen bg-slate-900 bg-gradient-to-b from-slate-900 to-slate-950 px-4 py-12 text-slate-200 sm:px-6 lg:px-8"
+      class="min-h-screen bg-slate-50 dark:bg-slate-900 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 px-4 py-12 text-slate-800 dark:text-slate-200 sm:px-6 lg:px-8 transition-colors duration-300"
     >
+      <!-- Theme Toggle -->
+      <div class="absolute top-6 right-6 lg:top-8 lg:right-8">
+        <app-theme-toggle></app-theme-toggle>
+      </div>
+
       <div class="mx-auto max-w-5xl">
         <div class="mb-12 text-center">
           <h1
-            class="mb-4 bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent drop-shadow-md"
+            class="mb-4 bg-gradient-to-r from-emerald-500 to-blue-600 dark:from-emerald-400 dark:to-blue-500 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent drop-shadow-md"
           >
             Poké Explorer
           </h1>
-          <p class="mx-auto max-w-2xl text-lg text-slate-400">
+          <p class="mx-auto max-w-2xl text-lg text-slate-600 dark:text-slate-400">
             Discover and explore the entire Pokémon universe instantly.
           </p>
         </div>
