@@ -148,12 +148,16 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
           </div>
 
           <!-- Content Grid -->
-          <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div class="flex flex-col gap-8 lg:col-span-2">
-              <app-pokemon-stats [pokemon]="pokemon()!"></app-pokemon-stats>
-              <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
+          <div class="flex flex-col gap-8">
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <div class="flex flex-col gap-8">
+                <app-pokemon-stats [pokemon]="pokemon()!"></app-pokemon-stats>
+              </div>
+              <div class="flex flex-col gap-8">
+                <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
+              </div>
             </div>
-            <div class="lg:col-span-1">
+            <div class="w-full">
               <app-pokemon-moves [moves]="pokemon()!.moves"></app-pokemon-moves>
             </div>
           </div>

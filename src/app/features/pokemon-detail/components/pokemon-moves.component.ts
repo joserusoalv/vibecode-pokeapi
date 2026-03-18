@@ -2,11 +2,12 @@ import { TitleCasePipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
 import { MoveDetail, PokemonBase } from '../../../core/models/pokemon.model';
 import { PokemonApiService } from '../../../core/services/pokemon-api.service';
+import { PokemonTypeBadgeComponent } from './pokemon-type-badge.component';
 
 @Component({
   selector: 'app-pokemon-moves',
   standalone: true,
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, PokemonTypeBadgeComponent],
   template: `
     <div
       class="rounded-2xl border border-slate-700/80 bg-slate-800/60 p-6 shadow-lg backdrop-blur-md"
@@ -64,53 +65,38 @@ import { PokemonApiService } from '../../../core/services/pokemon-api.service';
             >
               <div class="border-t border-slate-700/50 px-4 py-4 pb-5">
                 @if (moveDetails()?.id && expandedMoveUrl() === item.move.url) {
-                  <div class="grid grid-cols-2 gap-4">
-                    <div
-                      class="rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center"
-                    >
-                      <div class="mb-1 text-xs tracking-wider text-slate-400 uppercase">Power</div>
-                      <div
-                        class="text-lg font-bold"
-                        [class]="moveDetails()!.power ? 'text-amber-400' : 'text-slate-500'"
-                      >
-                        {{ moveDetails()!.power || '--' }}
+                  <div class="flex flex-col gap-5">
+                    <!-- Top metrics row -->
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                      <div class="flex-shrink-0">
+                        <app-pokemon-type-badge [type]="moveDetails()!.type"></app-pokemon-type-badge>
+                      </div>
+                      
+                      <div class="flex flex-wrap gap-3">
+                        <div class="flex min-w-[4rem] flex-col justify-center rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center">
+                          <span class="mb-1 text-[10px] tracking-wider text-slate-400 uppercase">Power</span>
+                          <span class="text-base font-bold" [class]="moveDetails()!.power ? 'text-amber-400' : 'text-slate-500'">{{ moveDetails()!.power || '--' }}</span>
+                        </div>
+                        <div class="flex min-w-[4rem] flex-col justify-center rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center">
+                          <span class="mb-1 text-[10px] tracking-wider text-slate-400 uppercase">Accuracy</span>
+                          <span class="text-base font-bold" [class]="moveDetails()!.accuracy ? 'text-blue-400' : 'text-slate-500'">{{ moveDetails()!.accuracy ? moveDetails()!.accuracy + '%' : '--' }}</span>
+                        </div>
+                        <div class="flex min-w-[4rem] flex-col justify-center rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center">
+                          <span class="mb-1 text-[10px] tracking-wider text-slate-400 uppercase">PP</span>
+                          <span class="text-base font-bold text-emerald-400">{{ moveDetails()!.pp }}</span>
+                        </div>
+                        <div class="flex min-w-[4rem] flex-col justify-center rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center">
+                          <span class="mb-1 text-[10px] tracking-wider text-slate-400 uppercase">Priority</span>
+                          <span class="text-base font-bold" [class]="moveDetails()!.priority > 0 ? 'text-red-400' : 'text-slate-300'">{{ moveDetails()!.priority > 0 ? '+' + moveDetails()!.priority : moveDetails()!.priority }}</span>
+                        </div>
                       </div>
                     </div>
-                    <div
-                      class="rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center"
-                    >
-                      <div class="mb-1 text-xs tracking-wider text-slate-400 uppercase">
-                        Accuracy
-                      </div>
-                      <div
-                        class="text-lg font-bold"
-                        [class]="moveDetails()!.accuracy ? 'text-blue-400' : 'text-slate-500'"
-                      >
-                        {{ moveDetails()!.accuracy ? moveDetails()!.accuracy + '%' : '--' }}
-                      </div>
-                    </div>
-                    <div
-                      class="rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center"
-                    >
-                      <div class="mb-1 text-xs tracking-wider text-slate-400 uppercase">PP</div>
-                      <div class="text-lg font-bold text-emerald-400">{{ moveDetails()!.pp }}</div>
-                    </div>
-                    <div
-                      class="rounded-lg border border-slate-700/30 bg-slate-800/50 p-2 text-center"
-                    >
-                      <div class="mb-1 text-xs tracking-wider text-slate-400 uppercase">
-                        Priority
-                      </div>
-                      <div
-                        class="text-lg font-bold"
-                        [class]="moveDetails()!.priority > 0 ? 'text-red-400' : 'text-slate-300'"
-                      >
-                        {{
-                          moveDetails()!.priority > 0
-                            ? '+' + moveDetails()!.priority
-                            : moveDetails()!.priority
-                        }}
-                      </div>
+                    
+                    <!-- Effect description -->
+                    <div class="mt-2 rounded-xl border border-slate-700/50 bg-slate-800/30 p-4">
+                      <p class="text-sm leading-relaxed text-slate-300">
+                        {{ getEnglishEffect(moveDetails()!.effect_entries) }}
+                      </p>
                     </div>
                   </div>
                 } @else if (expandedMoveUrl() === item.move.url) {
@@ -162,5 +148,11 @@ export class PokemonMovesComponent {
       next: (details: any) => this.moveDetails.set(details),
       error: () => this.expandedMoveUrl.set(null),
     });
+  }
+
+  getEnglishEffect(entries: any[]): string {
+    if (!entries || entries.length === 0) return 'No description available.';
+    const entry = entries.find(e => e.language.name === 'en');
+    return entry ? entry.short_effect : (entries[0].short_effect || 'No description available.');
   }
 }

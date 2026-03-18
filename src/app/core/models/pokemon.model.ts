@@ -57,6 +57,12 @@ export interface MoveDetail {
     name: string;
     language: PokemonBase;
   }[];
+  type: PokemonBase;
+  effect_entries: {
+    effect: string;
+    short_effect: string;
+    language: PokemonBase;
+  }[];
 }
 
 export interface TypeDetail {
