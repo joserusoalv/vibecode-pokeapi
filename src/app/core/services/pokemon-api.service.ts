@@ -15,36 +15,36 @@ import {
 export class PokemonApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = 'https://pokeapi.co/api/v2';
-  private readonly typeCache = new Map<string, Observable<TypeDetail>>();
+  private readonly cache = new Map<string, Observable<any>>();
+
+  private getCached<T>(url: string): Observable<T> {
+    if (!this.cache.has(url)) {
+      this.cache.set(url, this.http.get<T>(url).pipe(shareReplay(1)));
+    }
+    return this.cache.get(url)!;
+  }
 
   getPokemonIndex(limit = 10000): Observable<PokemonListResponse> {
-    return this.http.get<PokemonListResponse>(`${this.baseUrl}/pokemon?limit=${limit}`);
+    return this.getCached<PokemonListResponse>(`${this.baseUrl}/pokemon?limit=${limit}`);
   }
 
   getTypes(): Observable<PokemonListResponse> {
-    return this.http.get<PokemonListResponse>(`${this.baseUrl}/type`);
+    return this.getCached<PokemonListResponse>(`${this.baseUrl}/type`);
   }
 
   getPokemonDetails(nameOrId: string | number): Observable<PokemonDetail> {
-    return this.http.get<PokemonDetail>(`${this.baseUrl}/pokemon/${nameOrId}`);
+    return this.getCached<PokemonDetail>(`${this.baseUrl}/pokemon/${nameOrId}`);
   }
 
   getTypeDetails(idOrName: string | number): Observable<TypeDetail> {
-    const url = `${this.baseUrl}/type/${idOrName}`;
-    if (!this.typeCache.has(url)) {
-      this.typeCache.set(url, this.http.get<TypeDetail>(url).pipe(shareReplay(1)));
-    }
-    return this.typeCache.get(url)!;
+    return this.getCached<TypeDetail>(`${this.baseUrl}/type/${idOrName}`);
   }
 
   getTypeDetailsByUrl(url: string): Observable<TypeDetail> {
-    if (!this.typeCache.has(url)) {
-      this.typeCache.set(url, this.http.get<TypeDetail>(url).pipe(shareReplay(1)));
-    }
-    return this.typeCache.get(url)!;
+    return this.getCached<TypeDetail>(url);
   }
 
   getMoveDetails(url: string): Observable<MoveDetail> {
-    return this.http.get<MoveDetail>(url);
+    return this.getCached<MoveDetail>(url);
   }
 }
