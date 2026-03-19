@@ -68,6 +68,10 @@ export interface MoveDetail {
 export interface TypeDetail {
   id: number;
   name: string;
+  pokemon: {
+    pokemon: PokemonBase;
+    slot: number;
+  }[];
   sprites: {
     'generation-iii': {
       'diamond-pearl': {

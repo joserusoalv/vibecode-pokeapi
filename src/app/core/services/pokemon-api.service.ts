@@ -19,6 +19,10 @@ export class PokemonApiService {
     return this.http.get<PokemonListResponse>(`${this.baseUrl}/pokemon?limit=${limit}`);
   }
 
+  getTypes(): Observable<PokemonListResponse> {
+    return this.http.get<PokemonListResponse>(`${this.baseUrl}/type`);
+  }
+
   getPokemonDetails(nameOrId: string | number): Observable<PokemonDetail> {
     return this.http.get<PokemonDetail>(`${this.baseUrl}/pokemon/${nameOrId}`);
   }

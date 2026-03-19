@@ -46,7 +46,13 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
           </div>
         } @else {
           <!-- Search -->
-          <app-pokemon-search [query]="state.searchQuery()" (queryChange)="onSearch($event)">
+          <app-pokemon-search
+            [query]="state.searchQuery()"
+            (queryChange)="onSearch($event)"
+            [typesList]="state.typesList()"
+            [selectedType]="state.selectedType()"
+            (selectedTypeChange)="onTypeChange($event)"
+          >
           </app-pokemon-search>
 
           <!-- Table -->
@@ -71,6 +77,7 @@ export class PokemonExplorerComponent implements OnInit {
 
   ngOnInit() {
     this.state.loadIndexData();
+    this.state.loadTypes();
   }
 
   onSearch(query: string) {
@@ -79,5 +86,9 @@ export class PokemonExplorerComponent implements OnInit {
 
   onPageChange(page: number) {
     this.state.setPage(page);
+  }
+
+  onTypeChange(type: string) {
+    this.state.setSelectedType(type);
   }
 }
