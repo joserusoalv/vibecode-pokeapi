@@ -65,9 +65,19 @@ export interface MoveDetail {
   }[];
 }
 
+export interface TypeDamageRelations {
+  double_damage_from: PokemonBase[];
+  double_damage_to: PokemonBase[];
+  half_damage_from: PokemonBase[];
+  half_damage_to: PokemonBase[];
+  no_damage_from: PokemonBase[];
+  no_damage_to: PokemonBase[];
+}
+
 export interface TypeDetail {
   id: number;
   name: string;
+  damage_relations: TypeDamageRelations;
   pokemon: {
     pokemon: PokemonBase;
     slot: number;

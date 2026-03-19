@@ -7,6 +7,7 @@ import { PokemonMovesComponent } from './components/pokemon-moves.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
 import { PokemonStatsComponent } from './components/pokemon-stats.component';
 import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.component';
+import { PokemonMatchupsComponent } from './components/pokemon-matchups.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
 @Component({
@@ -16,6 +17,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
     PokemonTypeBadgeComponent,
     PokemonSpritesComponent,
     PokemonStatsComponent,
+    PokemonMatchupsComponent,
     PokemonAudioComponent,
     PokemonMovesComponent,
     ThemeToggleComponent,
@@ -159,6 +161,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
               <div class="flex flex-col gap-8">
                 <app-pokemon-stats [pokemon]="pokemon()!"></app-pokemon-stats>
+                <app-pokemon-matchups [pokemon]="pokemon()!"></app-pokemon-matchups>
               </div>
               <div class="flex flex-col gap-8">
                 <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
