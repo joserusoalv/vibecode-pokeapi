@@ -1,5 +1,5 @@
 import {} from '@angular/common';
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { PokemonBase } from '../../../core/models/pokemon.model';
 import { PokemonApiService } from '../../../core/services/pokemon-api.service';
 
@@ -17,15 +17,17 @@ import { PokemonApiService } from '../../../core/services/pokemon-api.service';
     }
   `,
 })
-export class PokemonTypeBadgeComponent implements OnInit {
+export class PokemonTypeBadgeComponent {
   type = input.required<PokemonBase>();
   private readonly apiService = inject(PokemonApiService);
 
   iconUrl = signal<string | null>(null);
   loading = signal<boolean>(true);
 
-  ngOnInit() {
-    this.apiService.getTypeDetailsByUrl(this.type().url).subscribe({
+  constructor() {
+    effect(() => {
+      this.loading.set(true);
+      this.apiService.getTypeDetailsByUrl(this.type().url).subscribe({
       next: (res: any) => {
         let icon = null;
         if (res.sprites) {
@@ -47,7 +49,8 @@ export class PokemonTypeBadgeComponent implements OnInit {
         this.iconUrl.set(icon);
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
+        error: () => this.loading.set(false),
+      });
     });
   }
 }

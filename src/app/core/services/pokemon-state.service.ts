@@ -63,6 +63,7 @@ export class PokemonStateService {
   readonly indexError = this._indexError.asReadonly();
   readonly typesList = this._typesList.asReadonly();
   readonly selectedType = this._selectedType.asReadonly();
+  readonly allPokemonData = this._indexData.asReadonly();
 
   // --- Computed State ---
   readonly filteredData = computed(() => {

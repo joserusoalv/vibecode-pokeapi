@@ -7,6 +7,7 @@ import {
   PokemonDetail,
   MoveDetail,
   TypeDetail,
+  AbilityDetail,
 } from '../models/pokemon.model';
 
 @Injectable({
@@ -46,5 +47,13 @@ export class PokemonApiService {
 
   getMoveDetails(url: string): Observable<MoveDetail> {
     return this.getCached<MoveDetail>(url);
+  }
+
+  getAbilityDetails(idOrNameOrUrl: string | number): Observable<AbilityDetail> {
+    const url =
+      typeof idOrNameOrUrl === 'string' && idOrNameOrUrl.startsWith('http')
+        ? idOrNameOrUrl
+        : `${this.baseUrl}/ability/${idOrNameOrUrl}`;
+    return this.getCached<AbilityDetail>(url);
   }
 }

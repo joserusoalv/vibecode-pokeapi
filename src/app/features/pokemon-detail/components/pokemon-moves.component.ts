@@ -24,7 +24,7 @@ import { PokemonTypeBadgeComponent } from './pokemon-type-badge.component';
         Learnable Moves
       </h3>
 
-      <div class="custom-scrollbar max-h-[600px] space-y-3 overflow-y-auto pr-2">
+      <div class="space-y-3">
         @for (item of displayedMoves(); track item.move.name) {
           <div
             class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 transition-all hover:border-slate-300 dark:hover:border-slate-600/50"

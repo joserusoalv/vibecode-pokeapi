@@ -1,12 +1,15 @@
-import { DecimalPipe, Location } from '@angular/common';
-import { Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, effect, HostListener, inject, input, OnInit, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { PokemonDetail } from '../../core/models/pokemon.model';
 import { PokemonApiService } from '../../core/services/pokemon-api.service';
+import { PokemonStateService } from '../../core/services/pokemon-state.service';
 import { PokemonAudioComponent } from './components/pokemon-audio.component';
 import { PokemonMovesComponent } from './components/pokemon-moves.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
 import { PokemonStatsComponent } from './components/pokemon-stats.component';
 import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.component';
+import { PokemonAbilitiesComponent } from './components/pokemon-abilities.component';
 import { PokemonMatchupsComponent } from './components/pokemon-matchups.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
@@ -14,7 +17,9 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
   selector: 'app-pokemon-detail',
   standalone: true,
   imports: [
+    RouterLink,
     PokemonTypeBadgeComponent,
+    PokemonAbilitiesComponent,
     PokemonSpritesComponent,
     PokemonStatsComponent,
     PokemonMatchupsComponent,
@@ -34,9 +39,9 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
 
       <div class="mx-auto max-w-6xl">
         <!-- Back Navigation -->
-        <button
-          (click)="goBack()"
-          class="group mb-8 flex items-center gap-2 text-slate-500 dark:text-slate-400 transition-colors hover:text-emerald-500 dark:hover:text-emerald-400 relative z-10"
+        <a
+          [routerLink]="['/pokemon']"
+          class="group mb-8 inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 transition-colors hover:text-emerald-500 dark:hover:text-emerald-400 relative z-10"
         >
           <svg
             class="h-5 w-5 transform transition-transform group-hover:-translate-x-1"
@@ -55,7 +60,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
             class="border-b border-transparent font-medium tracking-wide transition-colors group-hover:border-emerald-400"
             >Back to Explorer</span
           >
-        </button>
+        </a>
 
         @if (loading()) {
           <div class="flex items-center justify-center py-32">
@@ -82,12 +87,12 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
             </svg>
             <h2 class="mb-2 text-2xl font-bold">Something went wrong</h2>
             <p class="text-slate-600 dark:text-slate-300">{{ error() }}</p>
-            <button
-              (click)="goBack()"
-              class="mt-6 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2.5 font-medium text-slate-700 dark:text-white transition-all hover:bg-slate-50 dark:hover:border-slate-600 dark:hover:bg-slate-700 shadow-sm"
+            <a
+              [routerLink]="['/pokemon']"
+              class="mt-6 inline-block rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2.5 font-medium text-slate-700 dark:text-white transition-all hover:bg-slate-50 dark:hover:border-slate-600 dark:hover:bg-slate-700 shadow-sm"
             >
               Return Home
-            </button>
+            </a>
           </div>
         } @else if (pokemon()) {
           <!-- Header Card -->
@@ -106,22 +111,54 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
               class="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row md:items-start"
             >
               <div class="flex flex-col items-center gap-4 md:items-start">
-                <div class="flex items-center gap-4">
-                  <span class="font-mono text-2xl tracking-wider text-emerald-600/80 dark:text-emerald-400/80"
+                <div class="flex items-center gap-4 sm:gap-6">
+                  <!-- Previous Button -->
+                  <button
+                    (click)="goToPrevious()"
+                    [disabled]="!prevPokemonId()"
+                    class="group flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 backdrop-blur transition-all duration-300 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-white dark:hover:bg-slate-800 hover:text-emerald-500 dark:hover:text-emerald-400 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 dark:disabled:hover:border-slate-700 disabled:hover:bg-white/50 dark:disabled:hover:bg-slate-800/50 disabled:hover:text-slate-500 dark:disabled:hover:text-slate-400 disabled:hover:shadow-none"
+                    aria-label="Previous Pokémon"
+                  >
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 transform transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <span class="font-mono text-2xl sm:text-3xl tracking-wider text-emerald-600/80 dark:text-emerald-400/80 font-semibold"
                     >#{{ pokemon()!.id | number: '3.0-0' }}</span
                   >
-                  <h1
-                    class="bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-5xl font-extrabold text-transparent capitalize drop-shadow-sm md:text-6xl transition-colors duration-300"
+
+                  <!-- Next Button -->
+                  <button
+                    (click)="goToNext()"
+                    [disabled]="!nextPokemonId()"
+                    class="group flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 backdrop-blur transition-all duration-300 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-white dark:hover:bg-slate-800 hover:text-emerald-500 dark:hover:text-emerald-400 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 dark:disabled:hover:border-slate-700 disabled:hover:bg-white/50 dark:disabled:hover:bg-slate-800/50 disabled:hover:text-slate-500 dark:disabled:hover:text-slate-400 disabled:hover:shadow-none"
+                    aria-label="Next Pokémon"
                   >
-                    {{ pokemon()!.name }}
-                  </h1>
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
+
+                <h1
+                  class="bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text pb-2 text-4xl font-extrabold text-transparent capitalize drop-shadow-sm sm:text-5xl md:text-6xl transition-colors duration-300 leading-tight md:leading-snug break-words max-w-[16rem] sm:max-w-sm md:max-w-md lg:max-w-max text-center md:text-left"
+                >
+                  {{ pokemon()!.name.replace('-', ' ') }}
+                </h1>
                 <!-- Types -->
                 <div class="mt-4 flex flex-wrap gap-3">
                   @for (typeInfo of pokemon()!.types; track typeInfo.slot) {
                     <app-pokemon-type-badge [type]="typeInfo.type"></app-pokemon-type-badge>
                   }
                 </div>
+                
+                @if (pokemon()!.abilities && pokemon()!.abilities.length > 0) {
+                  <!-- Abilities -->
+                  <div class="w-full max-w-2xl mt-2">
+                    <app-pokemon-abilities [abilities]="pokemon()!.abilities"></app-pokemon-abilities>
+                  </div>
+                }
               </div>
 
               <!-- Audio and Main Image -->
@@ -180,13 +217,38 @@ export class PokemonDetailComponent implements OnInit {
   id = input.required<string>(); // Binded automatically via withComponentInputBinding()
 
   private readonly apiService = inject(PokemonApiService);
-  private readonly location = inject(Location);
+  private readonly stateService = inject(PokemonStateService);
+  private readonly router = inject(Router);
 
   pokemon = signal<PokemonDetail | null>(null);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
+  readonly allPokemon = this.stateService.allPokemonData;
+
+  readonly prevPokemonId = computed(() => {
+    const currentId = this.pokemon()?.id;
+    const list = this.allPokemon();
+    if (!currentId || list.length === 0) return null;
+    const idx = list.findIndex(p => p.id === currentId);
+    if (idx > 0) return list[idx - 1].id;
+    return null;
+  });
+
+  readonly nextPokemonId = computed(() => {
+    const currentId = this.pokemon()?.id;
+    const list = this.allPokemon();
+    if (!currentId || list.length === 0) return null;
+    const idx = list.findIndex(p => p.id === currentId);
+    if (idx !== -1 && idx < list.length - 1) return list[idx + 1].id;
+    return null;
+  });
+
   constructor() {
+    if (this.stateService.allPokemonData().length === 0) {
+      this.stateService.loadIndexData();
+    }
+
     effect(() => {
       const currentId = this.id();
       if (currentId) {
@@ -215,7 +277,26 @@ export class PokemonDetailComponent implements OnInit {
     });
   }
 
-  goBack() {
-    this.location.back();
+  goToPrevious() {
+    const prevId = this.prevPokemonId();
+    if (prevId) {
+      this.router.navigate(['/pokemon', prevId]);
+    }
+  }
+
+  goToNext() {
+    const nextId = this.nextPokemonId();
+    if (nextId) {
+      this.router.navigate(['/pokemon', nextId]);
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft') {
+      this.goToPrevious();
+    } else if (event.key === 'ArrowRight') {
+      this.goToNext();
+    }
   }
 }

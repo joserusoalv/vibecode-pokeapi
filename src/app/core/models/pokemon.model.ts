@@ -24,6 +24,11 @@ export interface PokemonDetail {
     slot: number;
     type: PokemonBase;
   }[];
+  abilities: {
+    ability: PokemonBase;
+    is_hidden: boolean;
+    slot: number;
+  }[];
   sprites: {
     front_default: string | null;
     back_default: string | null;
@@ -89,4 +94,15 @@ export interface TypeDetail {
       };
     };
   };
+}
+
+export interface AbilityDetail {
+  id: number;
+  name: string;
+  is_main_series: boolean;
+  effect_entries: {
+    effect: string;
+    short_effect: string;
+    language: PokemonBase;
+  }[];
 }
