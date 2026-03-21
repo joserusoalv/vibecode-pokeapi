@@ -10,9 +10,11 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
     <div class="grid h-full grid-cols-1 gap-8 md:grid-cols-2">
       <!-- General Stats -->
       <div
-        class="flex h-full flex-col rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
+        class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-lg backdrop-blur-md transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-800/60"
       >
-        <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
+        <h3
+          class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200"
+        >
           <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
@@ -25,22 +27,35 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
         </h3>
 
         <div class="space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/50 pb-3">
-            <span class="text-sm font-semibold tracking-wide text-slate-500 dark:text-slate-400 uppercase">Weight</span>
+          <div
+            class="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-700/50"
+          >
             <span
-              class="rounded-lg border border-slate-200 dark:border-slate-700/30 bg-slate-100 dark:bg-slate-900/50 px-3 py-1 font-medium text-slate-800 dark:text-white"
+              class="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+              >Weight</span
+            >
+            <span
+              class="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 font-medium text-slate-800 dark:border-slate-700/30 dark:bg-slate-900/50 dark:text-white"
               >{{ pokemon().weight / 10 }} kg</span
             >
           </div>
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/50 pb-3">
-            <span class="text-sm font-semibold tracking-wide text-slate-500 dark:text-slate-400 uppercase">Height</span>
+          <div
+            class="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-700/50"
+          >
             <span
-              class="rounded-lg border border-slate-200 dark:border-slate-700/30 bg-slate-100 dark:bg-slate-900/50 px-3 py-1 font-medium text-slate-800 dark:text-white"
+              class="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+              >Height</span
+            >
+            <span
+              class="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1 font-medium text-slate-800 dark:border-slate-700/30 dark:bg-slate-900/50 dark:text-white"
               >{{ pokemon().height / 10 }} m</span
             >
           </div>
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700/50 pb-3">
-            <span class="text-sm font-semibold tracking-wide text-slate-500 dark:text-slate-400 uppercase"
+          <div
+            class="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-700/50"
+          >
+            <span
+              class="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
               >Base Exp</span
             >
             <span
@@ -53,9 +68,11 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
 
       <!-- Combat Stats -->
       <div
-        class="flex h-full flex-col rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
+        class="flex h-full flex-col rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-lg backdrop-blur-md transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-800/60"
       >
-        <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
+        <h3
+          class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200"
+        >
           <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
@@ -72,22 +89,24 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
             <div class="group space-y-1">
               <div class="flex justify-between text-sm">
                 <span
-                  class="font-medium text-slate-600 dark:text-slate-300 capitalize transition-colors group-hover:text-slate-900 dark:group-hover:text-white"
+                  class="font-medium text-slate-600 capitalize transition-colors group-hover:text-slate-900 dark:text-slate-300 dark:group-hover:text-white"
                   >{{ stat.stat.name.replace('-', ' ') }}</span
                 >
                 <div class="flex gap-2">
                   @if (stat.effort > 0) {
                     <span
-                      class="self-center rounded border border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-600 dark:text-amber-300"
+                      class="self-center rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-600 dark:bg-amber-500/20 dark:text-amber-300"
                       title="Effort Value"
                       >EV +{{ stat.effort }}</span
                     >
                   }
-                  <span class="w-8 text-right font-bold text-slate-900 dark:text-white">{{ stat.base_stat }}</span>
+                  <span class="w-8 text-right font-bold text-slate-900 dark:text-white">{{
+                    stat.base_stat
+                  }}</span>
                 </div>
               </div>
               <div
-                class="h-2.5 w-full overflow-hidden rounded-full border border-slate-200 dark:border-slate-700/50 bg-slate-100 dark:bg-slate-900/80"
+                class="h-2.5 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-slate-700/50 dark:bg-slate-900/80"
               >
                 <div
                   class="relative h-2.5 rounded-full transition-all duration-1000 ease-out"

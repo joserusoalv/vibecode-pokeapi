@@ -6,17 +6,23 @@ import { Component, computed, input, output } from '@angular/core';
   template: `
     <div class="mt-8 flex flex-col items-center justify-center space-y-4">
       <!-- Minimalist Pagination Wrapper -->
-      <div class="inline-flex items-center gap-1 rounded-2xl bg-white/80 dark:bg-slate-800/80 p-1.5 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-shadow transition-colors duration-300">
-        
+      <div
+        class="inline-flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/80 p-1.5 shadow-lg shadow-slate-200/50 backdrop-blur-md transition-colors transition-shadow duration-300 dark:border-slate-700/50 dark:bg-slate-800/80 dark:shadow-slate-900/50"
+      >
         <!-- First Page -->
         <button
           (click)="pageChange.emit(1)"
           [disabled]="currentPage() === 1"
-          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white"
           title="First Page"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+            />
           </svg>
         </button>
 
@@ -24,18 +30,23 @@ import { Component, computed, input, output } from '@angular/core';
         <button
           (click)="pageChange.emit(currentPage() - 1)"
           [disabled]="currentPage() === 1"
-          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white"
           title="Previous Page"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
 
         <div class="mx-2 h-6 w-px bg-slate-200 dark:bg-slate-700/80"></div>
 
         <!-- Page Numbers -->
-        @for (page of visiblePages(); track page) {
+        @for (page of visiblePages(); track $index) {
           <button
             (click)="pageChange.emit(page)"
             [class.bg-emerald-500]="currentPage() === page"
@@ -58,11 +69,16 @@ import { Component, computed, input, output } from '@angular/core';
         <button
           (click)="pageChange.emit(currentPage() + 1)"
           [disabled]="currentPage() === totalPages()"
-          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white"
           title="Next Page"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
 
@@ -70,11 +86,16 @@ import { Component, computed, input, output } from '@angular/core';
         <button
           (click)="pageChange.emit(totalPages())"
           [disabled]="currentPage() === totalPages()"
-          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30 disabled:hover:bg-transparent dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white"
           title="Last Page"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 5l7 7-7 7M5 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>

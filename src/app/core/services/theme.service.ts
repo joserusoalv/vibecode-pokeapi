@@ -4,11 +4,11 @@ import { isPlatformBrowser } from '@angular/common';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
-  
+
   theme = signal<ThemeMode>('system');
   isDark = signal<boolean>(false);
 
@@ -19,11 +19,11 @@ export class ThemeService {
     if (saved) {
       this.theme.set(saved);
     }
-    
+
     effect(() => {
       const mode = this.theme();
       localStorage.setItem('theme', mode);
-      
+
       this.applyTheme(mode);
     });
 
@@ -43,10 +43,10 @@ export class ThemeService {
 
   private applyTheme(mode: ThemeMode) {
     if (!isPlatformBrowser(this.platformId)) return;
-    
+
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDarkMode = mode === 'dark' || (mode === 'system' && prefersDark);
-    
+
     this.isDark.set(isDarkMode);
     this.updateClassList(isDarkMode);
   }

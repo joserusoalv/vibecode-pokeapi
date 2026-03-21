@@ -18,28 +18,44 @@ interface MatchupGroup {
   imports: [PokemonTypeBadgeComponent],
   host: { class: 'block h-full' },
   template: `
-    <div class="flex h-full flex-col rounded-[2rem] border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-xl backdrop-blur-md transition-colors duration-300">
+    <div
+      class="flex h-full flex-col rounded-[2rem] border border-slate-200 bg-white/70 p-6 shadow-xl backdrop-blur-md transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-800/60"
+    >
       <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
         <svg class="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
         </svg>
         Type Matchups
       </h3>
-      
+
       @if (loading()) {
         <div class="flex h-32 items-center justify-center">
-          <div class="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-emerald-500"></div>
+          <div
+            class="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-emerald-500"
+          ></div>
         </div>
       } @else {
         <div class="flex flex-col gap-6">
           @for (group of matchupGroups(); track group.label) {
             @if (group.types.length > 0) {
               <div>
-                <div class="mb-3 flex items-center gap-3 border-b border-slate-100 dark:border-slate-700/50 pb-2">
-                  <span class="text-sm font-semibold tracking-wide text-slate-700 dark:text-slate-300 uppercase">
+                <div
+                  class="mb-3 flex items-center gap-3 border-b border-slate-100 pb-2 dark:border-slate-700/50"
+                >
+                  <span
+                    class="text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
+                  >
                     {{ group.label }}
                   </span>
-                  <span class="rounded-full px-2.5 py-0.5 text-xs font-bold font-mono shadow-sm" [class]="group.colorClass">
+                  <span
+                    class="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold shadow-sm"
+                    [class]="group.colorClass"
+                  >
                     {{ group.multiplier }}
                   </span>
                 </div>
@@ -58,15 +74,15 @@ interface MatchupGroup {
 })
 export class PokemonMatchupsComponent {
   pokemon = input.required<PokemonDetail>();
-  
+
   private readonly http = inject(HttpClient);
-  
+
   private readonly req = rxResource<any[], string[]>({
-    params: () => this.pokemon().types.map(t => t.type.url),
-    stream: ({params}) => {
+    params: () => this.pokemon().types.map((t) => t.type.url),
+    stream: ({ params }) => {
       if (params.length === 0) return of([]);
       return forkJoin(params.map((url: string) => this.http.get<any>(url)));
-    }
+    },
   });
 
   loading = computed(() => this.req.isLoading());
@@ -75,13 +91,13 @@ export class PokemonMatchupsComponent {
     const typeDetails = this.req.value();
     if (!typeDetails || typeDetails.length === 0) return [];
 
-    const multipliers = new Map<string, { multiplier: number, typeBase: PokemonBase }>();
+    const multipliers = new Map<string, { multiplier: number; typeBase: PokemonBase }>();
 
-    typeDetails.forEach(detail => {
+    typeDetails.forEach((detail) => {
       const dmg = detail.damage_relations;
-      
+
       const applyMod = (types: PokemonBase[], mod: number) => {
-        types.forEach(t => {
+        types.forEach((t) => {
           const current = multipliers.get(t.name)?.multiplier ?? 1;
           multipliers.set(t.name, { multiplier: current * mod, typeBase: t });
         });
@@ -93,11 +109,36 @@ export class PokemonMatchupsComponent {
     });
 
     const groups: MatchupGroup[] = [
-      { label: 'Critically Weak', multiplier: '4x', colorClass: 'bg-red-500 text-white dark:bg-red-500/80', types: [] },
-      { label: 'Weak', multiplier: 'x2', colorClass: 'bg-rose-400 text-white dark:bg-rose-500/80', types: [] },
-      { label: 'Resistant', multiplier: 'x0.5', colorClass: 'bg-emerald-500 text-white dark:bg-emerald-500/80', types: [] },
-      { label: 'Highly Resistant', multiplier: 'x0.25', colorClass: 'bg-teal-600 text-white dark:bg-teal-500/80', types: [] },
-      { label: 'Immune', multiplier: 'x0', colorClass: 'bg-slate-600 text-white dark:bg-slate-500/80', types: [] },
+      {
+        label: 'Critically Weak',
+        multiplier: '4x',
+        colorClass: 'bg-red-500 text-white dark:bg-red-500/80',
+        types: [],
+      },
+      {
+        label: 'Weak',
+        multiplier: 'x2',
+        colorClass: 'bg-rose-400 text-white dark:bg-rose-500/80',
+        types: [],
+      },
+      {
+        label: 'Resistant',
+        multiplier: 'x0.5',
+        colorClass: 'bg-emerald-500 text-white dark:bg-emerald-500/80',
+        types: [],
+      },
+      {
+        label: 'Highly Resistant',
+        multiplier: 'x0.25',
+        colorClass: 'bg-teal-600 text-white dark:bg-teal-500/80',
+        types: [],
+      },
+      {
+        label: 'Immune',
+        multiplier: 'x0',
+        colorClass: 'bg-slate-600 text-white dark:bg-slate-500/80',
+        types: [],
+      },
     ];
 
     multipliers.forEach(({ multiplier, typeBase }) => {
@@ -108,6 +149,6 @@ export class PokemonMatchupsComponent {
       else if (multiplier === 0) groups[4].types.push(typeBase);
     });
 
-    return groups.filter(g => g.types.length > 0);
+    return groups.filter((g) => g.types.length > 0);
   });
 }

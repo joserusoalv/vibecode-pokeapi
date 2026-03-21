@@ -9,10 +9,15 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
 @Component({
   selector: 'app-pokemon-explorer',
   standalone: true,
-  imports: [PokemonSearchComponent, PokemonTableComponent, PokemonPaginationComponent, ThemeToggleComponent],
+  imports: [
+    PokemonSearchComponent,
+    PokemonTableComponent,
+    PokemonPaginationComponent,
+    ThemeToggleComponent,
+  ],
   template: `
     <div
-      class="min-h-screen bg-slate-50 dark:bg-slate-900 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 px-4 py-12 text-slate-800 dark:text-slate-200 sm:px-6 lg:px-8 transition-colors duration-300"
+      class="min-h-screen bg-slate-50 bg-gradient-to-b from-slate-100 to-slate-200 px-4 py-12 text-slate-800 transition-colors duration-300 sm:px-6 lg:px-8 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-950 dark:text-slate-200"
     >
       <!-- Theme Toggle -->
       <div class="absolute top-6 right-6 lg:top-8 lg:right-8">
@@ -22,7 +27,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
       <div class="mx-auto max-w-5xl">
         <div class="mb-12 text-center">
           <h1
-            class="mb-4 bg-gradient-to-r from-emerald-500 to-blue-600 dark:from-emerald-400 dark:to-blue-500 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent drop-shadow-md"
+            class="mb-4 bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent drop-shadow-md dark:from-emerald-400 dark:to-blue-500"
           >
             Poké Explorer
           </h1>

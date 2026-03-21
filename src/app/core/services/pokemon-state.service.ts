@@ -15,15 +15,17 @@ export class PokemonStateService {
   private readonly _selectedType = signal<string>('');
 
   // --- HTTP Resources ---
-  private readonly indexRequest = httpResource<any>(() => 'https://pokeapi.co/api/v2/pokemon?limit=10000');
+  private readonly indexRequest = httpResource<any>(
+    () => 'https://pokeapi.co/api/v2/pokemon?limit=10000',
+  );
   private readonly typesRequest = httpResource<any>(() => 'https://pokeapi.co/api/v2/type');
-  
-  private readonly typeFilterRequest = httpResource<any>(() => 
-    this._selectedType() ? `https://pokeapi.co/api/v2/type/${this._selectedType()}` : undefined
+
+  private readonly typeFilterRequest = httpResource<any>(() =>
+    this._selectedType() ? `https://pokeapi.co/api/v2/type/${this._selectedType()}` : undefined,
   );
 
   // --- Computed State ---
-  
+
   readonly allPokemonData = computed<PokemonExtendedBase[]>(() => {
     const data = this.indexRequest.value();
     if (!data) return [];
@@ -42,23 +44,25 @@ export class PokemonStateService {
   private readonly _typeFilterIds = computed<Set<number> | null>(() => {
     const type = this._selectedType();
     if (!type) return null;
-    
+
     const data = this.typeFilterRequest.value();
-    if (!data) return null; 
-    
-    return new Set<number>(data.pokemon.map((p: any) => {
-      const parts = p.pokemon.url.split('/').filter(Boolean);
-      return parseInt(parts[parts.length - 1], 10);
-    }));
+    if (!data) return null;
+
+    return new Set<number>(
+      data.pokemon.map((p: any) => {
+        const parts = p.pokemon.url.split('/').filter(Boolean);
+        return parseInt(parts[parts.length - 1], 10);
+      }),
+    );
   });
 
   readonly filteredData = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     let data = this.allPokemonData();
-    
+
     const typeIds = this._typeFilterIds();
     if (typeIds !== null) {
-      data = data.filter(p => typeIds.has(p.id));
+      data = data.filter((p) => typeIds.has(p.id));
     }
 
     if (!query) return data;
@@ -75,9 +79,12 @@ export class PokemonStateService {
     const startIndex = (page - 1) * limit;
     return data.slice(startIndex, startIndex + limit);
   });
-  
+
   readonly indexLoadingState = computed<LoadingState>(() => {
-    if (this.indexRequest.isLoading() || (this._selectedType() && this.typeFilterRequest.isLoading())) {
+    if (
+      this.indexRequest.isLoading() ||
+      (this._selectedType() && this.typeFilterRequest.isLoading())
+    ) {
       return 'loading';
     }
     if (this.indexRequest.error() || this.typeFilterRequest.error()) {
@@ -115,6 +122,10 @@ export class PokemonStateService {
     }
   }
 
-  loadTypes(): void { /* No-op */ }
-  loadIndexData(): void { /* No-op */ }
+  loadTypes(): void {
+    /* No-op */
+  }
+  loadIndexData(): void {
+    /* No-op */
+  }
 }

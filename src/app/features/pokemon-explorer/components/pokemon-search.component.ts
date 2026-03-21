@@ -30,7 +30,7 @@ import { PokemonBase } from '../../../core/models/pokemon.model';
           type="search"
           [ngModel]="query()"
           (ngModelChange)="queryChange.emit($event)"
-          class="block w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 p-4 pl-10 text-sm text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:shadow-blue-500/20 focus:ring-blue-500"
+          class="block w-full rounded-2xl border border-slate-300 bg-white/80 p-4 pl-10 text-sm text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:shadow-blue-500/20 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder-slate-400"
           placeholder="Search Pokémon by name or ID..."
           required
         />
@@ -39,7 +39,7 @@ import { PokemonBase } from '../../../core/models/pokemon.model';
         <select
           [ngModel]="selectedType()"
           (ngModelChange)="selectedTypeChange.emit($event)"
-          class="block w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 p-4 text-sm text-slate-900 dark:text-white shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:ring-blue-500"
+          class="block w-full rounded-2xl border border-slate-300 bg-white/80 p-4 text-sm text-slate-900 shadow-lg backdrop-blur-sm transition-all focus:border-blue-500 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
         >
           <option value="">All Types</option>
           @for (type of typesList(); track type.name) {

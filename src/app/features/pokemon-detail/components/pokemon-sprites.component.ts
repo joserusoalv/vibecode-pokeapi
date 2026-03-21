@@ -6,7 +6,7 @@ import { Component, input } from '@angular/core';
   imports: [],
   template: `
     <div
-      class="rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
+      class="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-lg backdrop-blur-md transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-800/60"
     >
       <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
         <svg class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,7 +23,7 @@ import { Component, input } from '@angular/core';
       <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
         @if (sprites().front_default) {
           <div
-            class="group flex flex-col items-center rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 p-4 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10"
+            class="group flex flex-col items-center rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 dark:border-slate-700/50 dark:bg-slate-900/50"
           >
             <img
               [src]="sprites().front_default"
@@ -35,7 +35,7 @@ import { Component, input } from '@angular/core';
         }
         @if (sprites().back_default) {
           <div
-            class="group flex flex-col items-center rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 p-4 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10"
+            class="group flex flex-col items-center rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 dark:border-slate-700/50 dark:bg-slate-900/50"
           >
             <img
               [src]="sprites().back_default"
@@ -47,7 +47,7 @@ import { Component, input } from '@angular/core';
         }
         @if (sprites().front_shiny) {
           <div
-            class="group relative flex flex-col items-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 p-4 transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10"
+            class="group relative flex flex-col items-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10 dark:border-slate-700/50 dark:bg-slate-900/50"
           >
             <div
               class="absolute -top-10 -right-10 h-20 w-20 rounded-full bg-amber-400/20 blur-xl"
@@ -57,12 +57,14 @@ import { Component, input } from '@angular/core';
               [alt]="'Front shiny'"
               class="h-32 w-32 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
             />
-            <span class="mt-2 text-xs font-bold tracking-wide text-amber-600 dark:text-amber-500/80">✨ Shiny</span>
+            <span class="mt-2 text-xs font-bold tracking-wide text-amber-600 dark:text-amber-500/80"
+              >✨ Shiny</span
+            >
           </div>
         }
         @if (sprites().back_shiny) {
           <div
-            class="group relative flex flex-col items-center overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-900/50 p-4 transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10"
+            class="group relative flex flex-col items-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10 dark:border-slate-700/50 dark:bg-slate-900/50"
           >
             <div
               class="absolute -top-10 -right-10 h-20 w-20 rounded-full bg-amber-400/20 blur-xl"
