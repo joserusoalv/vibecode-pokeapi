@@ -1,8 +1,9 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PokemonBase } from '../../../core/models/pokemon.model';
-import { PokemonApiService } from '../../../core/services/pokemon-api.service';
-import { AbilityDetail } from '../../../core/models/pokemon.model';
+import { HttpClient } from '@angular/common/http';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, of } from 'rxjs';
+import { PokemonBase, AbilityDetail } from '../../../core/models/pokemon.model';
 
 @Component({
   selector: 'app-pokemon-abilities',
@@ -49,25 +50,25 @@ import { AbilityDetail } from '../../../core/models/pokemon.model';
 })
 export class PokemonAbilitiesComponent {
   abilities = input.required<{ ability: PokemonBase; is_hidden: boolean; slot: number }[]>();
-  private readonly apiService = inject(PokemonApiService);
+  private readonly http = inject(HttpClient);
   
-  abilityDetails = signal<Record<string, AbilityDetail>>({});
+  private readonly req = rxResource<AbilityDetail[], string[]>({
+    params: () => this.abilities().map(a => a.ability.url),
+    stream: ({params}) => {
+      if (params.length === 0) return of([]);
+      return forkJoin(params.map((url: string) => this.http.get<AbilityDetail>(url)));
+    }
+  });
 
-  constructor() {
-    effect(() => {
-      this.abilities().forEach((item) => {
-        this.apiService.getAbilityDetails(item.ability.url).subscribe({
-          next: (detail: AbilityDetail) => {
-            this.abilityDetails.update((current: Record<string, AbilityDetail>) => ({
-              ...current,
-              [item.ability.name]: detail,
-            }));
-          },
-          error: (err: unknown) => console.error('Failed to load ability details for ' + item.ability.name, err),
-        });
-      });
-    });
-  }
+  abilityDetails = computed(() => {
+    const list = this.req.value();
+    if (!list) return {};
+    const map: Record<string, AbilityDetail> = {};
+    for (const item of list) {
+      map[item.name] = item;
+    }
+    return map;
+  });
 
   getEnglishEffect(detail: AbilityDetail): string {
     const entry = detail.effect_entries.find((e: any) => e.language.name === 'en');

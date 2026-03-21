@@ -1,8 +1,9 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { forkJoin, of } from 'rxjs';
 import { PokemonDetail, PokemonBase, TypeDetail } from '../../../core/models/pokemon.model';
-import { PokemonApiService } from '../../../core/services/pokemon-api.service';
 import { PokemonTypeBadgeComponent } from './pokemon-type-badge.component';
-import { forkJoin } from 'rxjs';
 
 interface MatchupGroup {
   label: string;
@@ -53,70 +54,56 @@ interface MatchupGroup {
 })
 export class PokemonMatchupsComponent {
   pokemon = input.required<PokemonDetail>();
-  private readonly apiService = inject(PokemonApiService);
   
-  loading = signal(true);
-  matchupGroups = signal<MatchupGroup[]>([]);
+  private readonly http = inject(HttpClient);
+  
+  private readonly req = rxResource<any[], string[]>({
+    params: () => this.pokemon().types.map(t => t.type.url),
+    stream: ({params}) => {
+      if (params.length === 0) return of([]);
+      return forkJoin(params.map((url: string) => this.http.get<any>(url)));
+    }
+  });
 
-  constructor() {
-    effect(() => {
-      const poke = this.pokemon();
-      if (poke) {
-        this.calculateMatchups(poke);
-      }
-    });
-  }
+  loading = computed(() => this.req.isLoading());
 
-  private calculateMatchups(pokemon: PokemonDetail) {
-    this.loading.set(true);
-    
-    const requests = pokemon.types.map(t => 
-      this.apiService.getTypeDetailsByUrl(t.type.url)
-    );
+  matchupGroups = computed<MatchupGroup[]>(() => {
+    const typeDetails = this.req.value();
+    if (!typeDetails || typeDetails.length === 0) return [];
 
-    forkJoin(requests).subscribe({
-      next: (typeDetails: any[]) => {
-        const multipliers = new Map<string, { multiplier: number, typeBase: PokemonBase }>();
+    const multipliers = new Map<string, { multiplier: number, typeBase: PokemonBase }>();
 
-        // Apply mathematical combination for dual types
-        typeDetails.forEach(detail => {
-          const dmg = detail.damage_relations;
-          
-          const applyMod = (types: PokemonBase[], mod: number) => {
-            types.forEach(t => {
-              const current = multipliers.get(t.name)?.multiplier ?? 1;
-              multipliers.set(t.name, { multiplier: current * mod, typeBase: t });
-            });
-          };
-
-          applyMod(dmg.double_damage_from, 2);
-          applyMod(dmg.half_damage_from, 0.5);
-          applyMod(dmg.no_damage_from, 0);
+    typeDetails.forEach(detail => {
+      const dmg = detail.damage_relations;
+      
+      const applyMod = (types: PokemonBase[], mod: number) => {
+        types.forEach(t => {
+          const current = multipliers.get(t.name)?.multiplier ?? 1;
+          multipliers.set(t.name, { multiplier: current * mod, typeBase: t });
         });
+      };
 
-        const groups: MatchupGroup[] = [
-          { label: 'Critically Weak', multiplier: '4x', colorClass: 'bg-red-500 text-white dark:bg-red-500/80', types: [] },
-          { label: 'Weak', multiplier: 'x2', colorClass: 'bg-rose-400 text-white dark:bg-rose-500/80', types: [] },
-          { label: 'Resistant', multiplier: 'x0.5', colorClass: 'bg-emerald-500 text-white dark:bg-emerald-500/80', types: [] },
-          { label: 'Highly Resistant', multiplier: 'x0.25', colorClass: 'bg-teal-600 text-white dark:bg-teal-500/80', types: [] },
-          { label: 'Immune', multiplier: 'x0', colorClass: 'bg-slate-600 text-white dark:bg-slate-500/80', types: [] },
-        ];
-
-        multipliers.forEach(({ multiplier, typeBase }) => {
-          if (multiplier === 4) groups[0].types.push(typeBase);
-          else if (multiplier === 2) groups[1].types.push(typeBase);
-          else if (multiplier === 0.5) groups[2].types.push(typeBase);
-          else if (multiplier === 0.25) groups[3].types.push(typeBase);
-          else if (multiplier === 0) groups[4].types.push(typeBase);
-        });
-
-        this.matchupGroups.set(groups.filter(g => g.types.length > 0));
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Failed to load type damage relations', err);
-        this.loading.set(false);
-      }
+      applyMod(dmg.double_damage_from, 2);
+      applyMod(dmg.half_damage_from, 0.5);
+      applyMod(dmg.no_damage_from, 0);
     });
-  }
+
+    const groups: MatchupGroup[] = [
+      { label: 'Critically Weak', multiplier: '4x', colorClass: 'bg-red-500 text-white dark:bg-red-500/80', types: [] },
+      { label: 'Weak', multiplier: 'x2', colorClass: 'bg-rose-400 text-white dark:bg-rose-500/80', types: [] },
+      { label: 'Resistant', multiplier: 'x0.5', colorClass: 'bg-emerald-500 text-white dark:bg-emerald-500/80', types: [] },
+      { label: 'Highly Resistant', multiplier: 'x0.25', colorClass: 'bg-teal-600 text-white dark:bg-teal-500/80', types: [] },
+      { label: 'Immune', multiplier: 'x0', colorClass: 'bg-slate-600 text-white dark:bg-slate-500/80', types: [] },
+    ];
+
+    multipliers.forEach(({ multiplier, typeBase }) => {
+      if (multiplier === 4) groups[0].types.push(typeBase);
+      else if (multiplier === 2) groups[1].types.push(typeBase);
+      else if (multiplier === 0.5) groups[2].types.push(typeBase);
+      else if (multiplier === 0.25) groups[3].types.push(typeBase);
+      else if (multiplier === 0) groups[4].types.push(typeBase);
+    });
+
+    return groups.filter(g => g.types.length > 0);
+  });
 }

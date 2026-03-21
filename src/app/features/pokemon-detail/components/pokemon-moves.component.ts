@@ -1,7 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { MoveDetail, PokemonBase } from '../../../core/models/pokemon.model';
-import { PokemonApiService } from '../../../core/services/pokemon-api.service';
+import { httpResource } from '@angular/common/http';
 import { PokemonTypeBadgeComponent } from './pokemon-type-badge.component';
 
 @Component({
@@ -126,10 +126,11 @@ export class PokemonMovesComponent {
   moves = input.required<{ move: PokemonBase }[]>();
   limit = signal<number>(10);
 
-  private readonly apiService = inject(PokemonApiService);
-
   expandedMoveUrl = signal<string | null>(null);
-  moveDetails = signal<MoveDetail | null>(null);
+  
+  private readonly moveReq = httpResource<MoveDetail>(() => this.expandedMoveUrl() || undefined);
+  
+  moveDetails = computed(() => this.moveReq.value());
 
   get displayedMoves() {
     return () => this.moves().slice(0, this.limit());
@@ -140,14 +141,7 @@ export class PokemonMovesComponent {
       this.expandedMoveUrl.set(null);
       return;
     }
-
     this.expandedMoveUrl.set(move.url);
-    this.moveDetails.set(null);
-
-    this.apiService.getMoveDetails(move.url).subscribe({
-      next: (details: any) => this.moveDetails.set(details),
-      error: () => this.expandedMoveUrl.set(null),
-    });
   }
 
   getEnglishEffect(entries: any[]): string {

@@ -2,8 +2,8 @@ import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, HostListener, inject, input, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PokemonDetail } from '../../core/models/pokemon.model';
-import { PokemonApiService } from '../../core/services/pokemon-api.service';
 import { PokemonStateService } from '../../core/services/pokemon-state.service';
+import { httpResource } from '@angular/common/http';
 import { PokemonAudioComponent } from './components/pokemon-audio.component';
 import { PokemonMovesComponent } from './components/pokemon-moves.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
@@ -213,16 +213,19 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
     </div>
   `,
 })
-export class PokemonDetailComponent implements OnInit {
+export class PokemonDetailComponent {
   id = input.required<string>(); // Binded automatically via withComponentInputBinding()
 
-  private readonly apiService = inject(PokemonApiService);
   private readonly stateService = inject(PokemonStateService);
   private readonly router = inject(Router);
 
-  pokemon = signal<PokemonDetail | null>(null);
-  loading = signal<boolean>(true);
-  error = signal<string | null>(null);
+  private readonly detailReq = httpResource<PokemonDetail>(() => 
+    this.id() ? `https://pokeapi.co/api/v2/pokemon/${this.id()}` : undefined
+  );
+
+  pokemon = computed(() => this.detailReq.value());
+  loading = computed(() => this.detailReq.isLoading());
+  error = computed(() => this.detailReq.error() ? 'Pokémon not found, or there was a network error.' : null);
 
   readonly allPokemon = this.stateService.allPokemonData;
 
@@ -243,39 +246,6 @@ export class PokemonDetailComponent implements OnInit {
     if (idx !== -1 && idx < list.length - 1) return list[idx + 1].id;
     return null;
   });
-
-  constructor() {
-    if (this.stateService.allPokemonData().length === 0) {
-      this.stateService.loadIndexData();
-    }
-
-    effect(() => {
-      const currentId = this.id();
-      if (currentId) {
-        this.loadPokemon(currentId);
-      }
-    });
-  }
-
-  ngOnInit() {}
-
-  loadPokemon(id: string) {
-    this.loading.set(true);
-    this.error.set(null);
-    this.pokemon.set(null);
-
-    this.apiService.getPokemonDetails(id).subscribe({
-      next: (data: any) => {
-        this.pokemon.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error(err);
-        this.error.set('Pokémon not found, or there was a network error.');
-        this.loading.set(false);
-      },
-    });
-  }
 
   goToPrevious() {
     const prevId = this.prevPokemonId();

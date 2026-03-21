@@ -1,7 +1,7 @@
 import {} from '@angular/common';
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { PokemonBase } from '../../../core/models/pokemon.model';
-import { PokemonApiService } from '../../../core/services/pokemon-api.service';
+import { httpResource } from '@angular/common/http';
 
 @Component({
   selector: 'app-pokemon-type-badge',
@@ -19,38 +19,29 @@ import { PokemonApiService } from '../../../core/services/pokemon-api.service';
 })
 export class PokemonTypeBadgeComponent {
   type = input.required<PokemonBase>();
-  private readonly apiService = inject(PokemonApiService);
 
-  iconUrl = signal<string | null>(null);
-  loading = signal<boolean>(true);
+  private readonly typeReq = httpResource<any>(() => this.type().url);
 
-  constructor() {
-    effect(() => {
-      this.loading.set(true);
-      this.apiService.getTypeDetailsByUrl(this.type().url).subscribe({
-      next: (res: any) => {
-        let icon = null;
-        if (res.sprites) {
-          const genKeys = Object.keys(res.sprites);
-          for (const gen of genKeys) {
-            const gameObj = res.sprites[gen];
-            if (gameObj && typeof gameObj === 'object') {
-              const gameKeys = Object.keys(gameObj);
-              for (const game of gameKeys) {
-                if (gameObj[game]?.name_icon) {
-                  icon = gameObj[game].name_icon;
-                  break;
-                }
-              }
-            }
-            if (icon) break;
+  iconUrl = computed(() => {
+    const res = this.typeReq.value();
+    if (!res?.sprites) return null;
+    let icon = null;
+    const genKeys = Object.keys(res.sprites);
+    for (const gen of genKeys) {
+      const gameObj = res.sprites[gen];
+      if (gameObj && typeof gameObj === 'object') {
+        const gameKeys = Object.keys(gameObj);
+        for (const game of gameKeys) {
+          if (gameObj[game]?.name_icon) {
+            icon = gameObj[game].name_icon;
+            break;
           }
         }
-        this.iconUrl.set(icon);
-        this.loading.set(false);
-      },
-        error: () => this.loading.set(false),
-      });
-    });
-  }
+      }
+      if (icon) break;
+    }
+    return icon;
+  });
+
+  loading = computed(() => this.typeReq.isLoading());
 }

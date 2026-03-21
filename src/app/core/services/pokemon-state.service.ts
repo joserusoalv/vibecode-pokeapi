@@ -1,8 +1,5 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, of } from 'rxjs';
-import { catchError, map, switchMap, distinctUntilChanged } from 'rxjs/operators';
-import { PokemonApiService } from './pokemon-api.service';
+import { Injectable, signal, computed } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { PokemonExtendedBase, PokemonBase } from '../models/pokemon.model';
 
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
@@ -11,64 +8,53 @@ export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
   providedIn: 'root',
 })
 export class PokemonStateService {
-  private readonly apiService = inject(PokemonApiService);
-
   // --- Atomic Signals ---
-  private readonly _indexData = signal<PokemonExtendedBase[]>([]);
   private readonly _searchQuery = signal<string>('');
   private readonly _currentPage = signal<number>(1);
   private readonly _itemsPerPage = signal<number>(20);
-  private readonly _indexLoadingState = signal<LoadingState>('idle');
-  private readonly _indexError = signal<string | null>(null);
-
-  private readonly _typesList = signal<PokemonBase[]>([]);
   private readonly _selectedType = signal<string>('');
-  private readonly _typeFilterIds = signal<Set<number> | null>(null);
 
-  private readonly typeSubject = new Subject<string>();
-
-  constructor() {
-    this.typeSubject.pipe(
-      distinctUntilChanged(),
-      switchMap(type => {
-        if (!type) {
-          return of(null);
-        }
-        this._indexLoadingState.set('loading');
-        return this.apiService.getTypeDetails(type).pipe(
-          map(res => {
-            return new Set(res.pokemon.map(p => {
-              const parts = p.pokemon.url.split('/').filter(Boolean);
-              return parseInt(parts[parts.length - 1], 10);
-            }));
-          }),
-          catchError(() => of(new Set<number>()))
-        );
-      }),
-      takeUntilDestroyed()
-    ).subscribe((ids) => {
-      this._typeFilterIds.set(ids);
-      if (this._indexData().length > 0) {
-         this._indexLoadingState.set('success');
-      }
-      this._currentPage.set(1);
-    });
-  }
-
-  // --- Read-only Exposures ---
-  readonly searchQuery = this._searchQuery.asReadonly();
-  readonly currentPage = this._currentPage.asReadonly();
-  readonly itemsPerPage = this._itemsPerPage.asReadonly();
-  readonly indexLoadingState = this._indexLoadingState.asReadonly();
-  readonly indexError = this._indexError.asReadonly();
-  readonly typesList = this._typesList.asReadonly();
-  readonly selectedType = this._selectedType.asReadonly();
-  readonly allPokemonData = this._indexData.asReadonly();
+  // --- HTTP Resources ---
+  private readonly indexRequest = httpResource<any>(() => 'https://pokeapi.co/api/v2/pokemon?limit=10000');
+  private readonly typesRequest = httpResource<any>(() => 'https://pokeapi.co/api/v2/type');
+  
+  private readonly typeFilterRequest = httpResource<any>(() => 
+    this._selectedType() ? `https://pokeapi.co/api/v2/type/${this._selectedType()}` : undefined
+  );
 
   // --- Computed State ---
+  
+  readonly allPokemonData = computed<PokemonExtendedBase[]>(() => {
+    const data = this.indexRequest.value();
+    if (!data) return [];
+    return data.results.map((p: any) => {
+      const parts = p.url.split('/').filter(Boolean);
+      return { ...p, id: parseInt(parts[parts.length - 1], 10) };
+    });
+  });
+
+  readonly typesList = computed<PokemonBase[]>(() => {
+    const data = this.typesRequest.value();
+    if (!data) return [];
+    return data.results.sort((a: any, b: any) => a.name.localeCompare(b.name));
+  });
+
+  private readonly _typeFilterIds = computed<Set<number> | null>(() => {
+    const type = this._selectedType();
+    if (!type) return null;
+    
+    const data = this.typeFilterRequest.value();
+    if (!data) return null; 
+    
+    return new Set<number>(data.pokemon.map((p: any) => {
+      const parts = p.pokemon.url.split('/').filter(Boolean);
+      return parseInt(parts[parts.length - 1], 10);
+    }));
+  });
+
   readonly filteredData = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    let data = this._indexData();
+    let data = this.allPokemonData();
     
     const typeIds = this._typeFilterIds();
     if (typeIds !== null) {
@@ -89,16 +75,37 @@ export class PokemonStateService {
     const startIndex = (page - 1) * limit;
     return data.slice(startIndex, startIndex + limit);
   });
+  
+  readonly indexLoadingState = computed<LoadingState>(() => {
+    if (this.indexRequest.isLoading() || (this._selectedType() && this.typeFilterRequest.isLoading())) {
+      return 'loading';
+    }
+    if (this.indexRequest.error() || this.typeFilterRequest.error()) {
+      return 'error';
+    }
+    return 'success';
+  });
+
+  readonly indexError = computed<string | null>(() => {
+    const err = this.indexRequest.error() || this.typeFilterRequest.error();
+    return err ? 'Failed to load data' : null;
+  });
+
+  // --- Read-only Exposures ---
+  readonly searchQuery = this._searchQuery.asReadonly();
+  readonly currentPage = this._currentPage.asReadonly();
+  readonly itemsPerPage = this._itemsPerPage.asReadonly();
+  readonly selectedType = this._selectedType.asReadonly();
 
   // --- Actions ---
   setSearchQuery(query: string): void {
     this._searchQuery.set(query);
-    this._currentPage.set(1); // Reset page on search
+    this._currentPage.set(1);
   }
 
   setSelectedType(type: string): void {
     this._selectedType.set(type);
-    this.typeSubject.next(type);
+    this._currentPage.set(1);
   }
 
   setPage(page: number): void {
@@ -108,39 +115,6 @@ export class PokemonStateService {
     }
   }
 
-  loadTypes(): void {
-    if (this._typesList().length > 0) return;
-    this.apiService.getTypes().subscribe({
-      next: (res) => {
-        // Sort types alphabetically
-        const sorted = res.results.sort((a, b) => a.name.localeCompare(b.name));
-        this._typesList.set(sorted);
-      },
-      error: (err) => console.error('Failed to load types', err)
-    });
-  }
-
-  loadIndexData(): void {
-    if (this._indexData().length > 0 || this._indexLoadingState() === 'loading') {
-      return; // Already loaded or loading
-    }
-
-    this._indexLoadingState.set('loading');
-    this.apiService.getPokemonIndex().subscribe({
-      next: (response) => {
-        // Map out the ID from the URL to avoid parsing later
-        const enriched = response.results.map((p) => {
-          const parts = p.url.split('/').filter(Boolean);
-          const id = parseInt(parts[parts.length - 1], 10);
-          return { ...p, id };
-        });
-        this._indexData.set(enriched);
-        this._indexLoadingState.set('success');
-      },
-      error: (err) => {
-        this._indexError.set(err.message || 'Failed to load Pokemon data');
-        this._indexLoadingState.set('error');
-      },
-    });
-  }
+  loadTypes(): void { /* No-op */ }
+  loadIndexData(): void { /* No-op */ }
 }
