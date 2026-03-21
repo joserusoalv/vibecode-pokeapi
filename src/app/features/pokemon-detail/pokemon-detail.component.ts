@@ -1,17 +1,17 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, effect, HostListener, inject, input, OnInit, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PokemonDetail } from '../../core/models/pokemon.model';
 import { PokemonStateService } from '../../core/services/pokemon-state.service';
-import { httpResource } from '@angular/common/http';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
+import { PokemonAbilitiesComponent } from './components/pokemon-abilities.component';
 import { PokemonAudioComponent } from './components/pokemon-audio.component';
+import { PokemonMatchupsComponent } from './components/pokemon-matchups.component';
 import { PokemonMovesComponent } from './components/pokemon-moves.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
 import { PokemonStatsComponent } from './components/pokemon-stats.component';
 import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.component';
-import { PokemonAbilitiesComponent } from './components/pokemon-abilities.component';
-import { PokemonMatchupsComponent } from './components/pokemon-matchups.component';
-import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -28,12 +28,16 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
     ThemeToggleComponent,
     DecimalPipe,
   ],
+  host: {
+    '(window:keydown.ArrowLeft)': 'goToPrevious()',
+    '(window:keydown.ArrowRight)': 'goToNext()',
+  },
   template: `
     <div
-      class="min-h-screen bg-slate-50 dark:bg-slate-900 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 px-4 py-8 text-slate-800 dark:text-slate-200 sm:px-6 lg:px-8 transition-colors duration-300 relative"
+      class="relative min-h-screen bg-slate-50 bg-gradient-to-b from-slate-100 to-slate-200 px-4 py-8 text-slate-800 transition-colors duration-300 sm:px-6 lg:px-8 dark:bg-slate-900 dark:from-slate-900 dark:to-slate-950 dark:text-slate-200"
     >
       <!-- Theme Toggle -->
-      <div class="absolute top-6 right-6 lg:top-8 lg:right-8 z-50">
+      <div class="absolute top-6 right-6 z-50 lg:top-8 lg:right-8">
         <app-theme-toggle></app-theme-toggle>
       </div>
 
@@ -41,7 +45,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
         <!-- Back Navigation -->
         <a
           [routerLink]="['/pokemon']"
-          class="group mb-8 inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 transition-colors hover:text-emerald-500 dark:hover:text-emerald-400 relative z-10"
+          class="group relative z-10 mb-8 inline-flex items-center gap-2 text-slate-500 transition-colors hover:text-emerald-500 dark:text-slate-400 dark:hover:text-emerald-400"
         >
           <svg
             class="h-5 w-5 transform transition-transform group-hover:-translate-x-1"
@@ -70,7 +74,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
           </div>
         } @else if (error()) {
           <div
-            class="mx-auto max-w-lg rounded-2xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 p-6 text-center text-red-600 dark:text-red-400 shadow-xl backdrop-blur transition-colors duration-300"
+            class="mx-auto max-w-lg rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-600 shadow-xl backdrop-blur transition-colors duration-300 dark:border-red-800/50 dark:bg-red-900/20 dark:text-red-400"
           >
             <svg
               class="mx-auto mb-4 h-12 w-12 text-red-500 dark:text-red-500/80"
@@ -89,7 +93,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
             <p class="text-slate-600 dark:text-slate-300">{{ error() }}</p>
             <a
               [routerLink]="['/pokemon']"
-              class="mt-6 inline-block rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-2.5 font-medium text-slate-700 dark:text-white transition-all hover:bg-slate-50 dark:hover:border-slate-600 dark:hover:bg-slate-700 shadow-sm"
+              class="mt-6 inline-block rounded-xl border border-slate-300 bg-white px-6 py-2.5 font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:border-slate-600 dark:hover:bg-slate-700"
             >
               Return Home
             </a>
@@ -97,7 +101,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
         } @else if (pokemon()) {
           <!-- Header Card -->
           <div
-            class="relative mb-8 overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-8 shadow-2xl backdrop-blur-md transition-colors duration-300"
+            class="relative mb-8 overflow-hidden rounded-[2rem] border border-slate-200 bg-white/70 p-8 shadow-2xl backdrop-blur-md transition-colors duration-300 dark:border-slate-700/80 dark:bg-slate-800/60"
           >
             <!-- Decorative background glows -->
             <div
@@ -116,15 +120,26 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
                   <button
                     (click)="goToPrevious()"
                     [disabled]="!prevPokemonId()"
-                    class="group flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 backdrop-blur transition-all duration-300 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-white dark:hover:bg-slate-800 hover:text-emerald-500 dark:hover:text-emerald-400 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 dark:disabled:hover:border-slate-700 disabled:hover:bg-white/50 dark:disabled:hover:bg-slate-800/50 disabled:hover:text-slate-500 dark:disabled:hover:text-slate-400 disabled:hover:shadow-none"
+                    class="group flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/50 text-slate-500 backdrop-blur transition-all duration-300 hover:border-emerald-300 hover:bg-white hover:text-emerald-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-white/50 disabled:hover:text-slate-500 disabled:hover:shadow-none sm:h-12 sm:w-12 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-emerald-500 dark:hover:bg-slate-800 dark:hover:text-emerald-400 dark:disabled:hover:border-slate-700 dark:disabled:hover:bg-slate-800/50 dark:disabled:hover:text-slate-400"
                     aria-label="Previous Pokémon"
                   >
-                    <svg class="h-5 w-5 sm:h-6 sm:w-6 transform transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                    <svg
+                      class="h-5 w-5 transform transition-transform group-hover:-translate-x-1 sm:h-6 sm:w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
 
-                  <span class="font-mono text-2xl sm:text-3xl tracking-wider text-emerald-600/80 dark:text-emerald-400/80 font-semibold"
+                  <span
+                    class="font-mono text-2xl font-semibold tracking-wider text-emerald-600/80 sm:text-3xl dark:text-emerald-400/80"
                     >#{{ pokemon()!.id | number: '3.0-0' }}</span
                   >
 
@@ -132,17 +147,27 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
                   <button
                     (click)="goToNext()"
                     [disabled]="!nextPokemonId()"
-                    class="group flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 backdrop-blur transition-all duration-300 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-white dark:hover:bg-slate-800 hover:text-emerald-500 dark:hover:text-emerald-400 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 dark:disabled:hover:border-slate-700 disabled:hover:bg-white/50 dark:disabled:hover:bg-slate-800/50 disabled:hover:text-slate-500 dark:disabled:hover:text-slate-400 disabled:hover:shadow-none"
+                    class="group flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/50 text-slate-500 backdrop-blur transition-all duration-300 hover:border-emerald-300 hover:bg-white hover:text-emerald-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-white/50 disabled:hover:text-slate-500 disabled:hover:shadow-none sm:h-12 sm:w-12 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:border-emerald-500 dark:hover:bg-slate-800 dark:hover:text-emerald-400 dark:disabled:hover:border-slate-700 dark:disabled:hover:bg-slate-800/50 dark:disabled:hover:text-slate-400"
                     aria-label="Next Pokémon"
                   >
-                    <svg class="h-5 w-5 sm:h-6 sm:w-6 transform transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="h-5 w-5 transform transition-transform group-hover:translate-x-1 sm:h-6 sm:w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </button>
                 </div>
 
                 <h1
-                  class="bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text pb-2 text-4xl font-extrabold text-transparent capitalize drop-shadow-sm sm:text-5xl md:text-6xl transition-colors duration-300 leading-tight md:leading-snug break-words max-w-[16rem] sm:max-w-sm md:max-w-md lg:max-w-max text-center md:text-left"
+                  class="max-w-[16rem] bg-gradient-to-br from-slate-900 to-slate-500 bg-clip-text pb-2 text-center text-4xl leading-tight font-extrabold break-words text-transparent capitalize drop-shadow-sm transition-colors duration-300 sm:max-w-sm sm:text-5xl md:max-w-md md:text-left md:text-6xl md:leading-snug lg:max-w-max dark:from-white dark:to-slate-400"
                 >
                   {{ pokemon()!.name.replace('-', ' ') }}
                 </h1>
@@ -152,11 +177,13 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
                     <app-pokemon-type-badge [type]="typeInfo.type"></app-pokemon-type-badge>
                   }
                 </div>
-                
+
                 @if (pokemon()!.abilities && pokemon()!.abilities.length > 0) {
                   <!-- Abilities -->
-                  <div class="w-full max-w-2xl mt-2">
-                    <app-pokemon-abilities [abilities]="pokemon()!.abilities"></app-pokemon-abilities>
+                  <div class="mt-2 w-full max-w-2xl">
+                    <app-pokemon-abilities
+                      [abilities]="pokemon()!.abilities"
+                    ></app-pokemon-abilities>
                   </div>
                 }
               </div>
@@ -195,13 +222,17 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
 
           <!-- Content Grid -->
           <div class="flex flex-col gap-8">
+            <div class="w-full">
+              <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
+            </div>
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <!-- Columna Izquierda -->
               <div class="flex flex-col gap-8">
                 <app-pokemon-stats [pokemon]="pokemon()!"></app-pokemon-stats>
-                <app-pokemon-matchups [pokemon]="pokemon()!"></app-pokemon-matchups>
               </div>
+              <!-- Columna Derecha -->
               <div class="flex flex-col gap-8">
-                <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
+                <app-pokemon-matchups [pokemon]="pokemon()!"></app-pokemon-matchups>
               </div>
             </div>
             <div class="w-full">
@@ -219,13 +250,15 @@ export class PokemonDetailComponent {
   private readonly stateService = inject(PokemonStateService);
   private readonly router = inject(Router);
 
-  private readonly detailReq = httpResource<PokemonDetail>(() => 
-    this.id() ? `https://pokeapi.co/api/v2/pokemon/${this.id()}` : undefined
+  private readonly detailReq = httpResource<PokemonDetail>(() =>
+    this.id() ? `https://pokeapi.co/api/v2/pokemon/${this.id()}` : undefined,
   );
 
   pokemon = computed(() => this.detailReq.value());
   loading = computed(() => this.detailReq.isLoading());
-  error = computed(() => this.detailReq.error() ? 'Pokémon not found, or there was a network error.' : null);
+  error = computed(() =>
+    this.detailReq.error() ? 'Pokémon not found, or there was a network error.' : null,
+  );
 
   readonly allPokemon = this.stateService.allPokemonData;
 
@@ -233,7 +266,7 @@ export class PokemonDetailComponent {
     const currentId = this.pokemon()?.id;
     const list = this.allPokemon();
     if (!currentId || list.length === 0) return null;
-    const idx = list.findIndex(p => p.id === currentId);
+    const idx = list.findIndex((p) => p.id === currentId);
     if (idx > 0) return list[idx - 1].id;
     return null;
   });
@@ -242,7 +275,7 @@ export class PokemonDetailComponent {
     const currentId = this.pokemon()?.id;
     const list = this.allPokemon();
     if (!currentId || list.length === 0) return null;
-    const idx = list.findIndex(p => p.id === currentId);
+    const idx = list.findIndex((p) => p.id === currentId);
     if (idx !== -1 && idx < list.length - 1) return list[idx + 1].id;
     return null;
   });
@@ -258,15 +291,6 @@ export class PokemonDetailComponent {
     const nextId = this.nextPokemonId();
     if (nextId) {
       this.router.navigate(['/pokemon', nextId]);
-    }
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowLeft') {
-      this.goToPrevious();
-    } else if (event.key === 'ArrowRight') {
-      this.goToNext();
     }
   }
 }

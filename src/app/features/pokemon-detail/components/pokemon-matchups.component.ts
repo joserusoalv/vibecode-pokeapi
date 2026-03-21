@@ -16,10 +16,14 @@ interface MatchupGroup {
   selector: 'app-pokemon-matchups',
   standalone: true,
   imports: [PokemonTypeBadgeComponent],
+  host: { class: 'block h-full' },
   template: `
-    <div class="rounded-[2rem] border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-xl backdrop-blur-md transition-colors duration-300">
-      <h3 class="mb-6 font-mono text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 uppercase">
-        Matchups
+    <div class="flex h-full flex-col rounded-[2rem] border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-xl backdrop-blur-md transition-colors duration-300">
+      <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
+        <svg class="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Type Matchups
       </h3>
       
       @if (loading()) {

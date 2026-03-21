@@ -5,11 +5,12 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
   selector: 'app-pokemon-stats',
   standalone: true,
   imports: [],
+  host: { class: 'block h-full' },
   template: `
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+    <div class="grid h-full grid-cols-1 gap-8 md:grid-cols-2">
       <!-- General Stats -->
       <div
-        class="rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
+        class="flex h-full flex-col rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
       >
         <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
           <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,7 +53,7 @@ import { PokemonDetail } from '../../../core/models/pokemon.model';
 
       <!-- Combat Stats -->
       <div
-        class="rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
+        class="flex h-full flex-col rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white/70 dark:bg-slate-800/60 p-6 shadow-lg backdrop-blur-md transition-colors duration-300"
       >
         <h3 class="mb-6 flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-200">
           <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

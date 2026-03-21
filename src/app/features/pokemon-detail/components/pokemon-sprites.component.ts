@@ -28,7 +28,7 @@ import { Component, input } from '@angular/core';
             <img
               [src]="sprites().front_default"
               [alt]="'Front default'"
-              class="h-24 w-24 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
+              class="h-32 w-32 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
             />
             <span class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">Default</span>
           </div>
@@ -40,7 +40,7 @@ import { Component, input } from '@angular/core';
             <img
               [src]="sprites().back_default"
               [alt]="'Back default'"
-              class="h-24 w-24 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
+              class="h-32 w-32 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
             />
             <span class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">Back</span>
           </div>
@@ -55,7 +55,7 @@ import { Component, input } from '@angular/core';
             <img
               [src]="sprites().front_shiny"
               [alt]="'Front shiny'"
-              class="h-24 w-24 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
+              class="h-32 w-32 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
             />
             <span class="mt-2 text-xs font-bold tracking-wide text-amber-600 dark:text-amber-500/80">✨ Shiny</span>
           </div>
@@ -70,7 +70,7 @@ import { Component, input } from '@angular/core';
             <img
               [src]="sprites().back_shiny"
               [alt]="'Back shiny'"
-              class="h-24 w-24 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
+              class="h-32 w-32 object-contain drop-shadow-md filter transition-transform group-hover:scale-110"
             />
             <span class="mt-2 text-xs font-bold tracking-wide text-amber-600 dark:text-amber-500/80"
               >✨ Back Shiny</span
