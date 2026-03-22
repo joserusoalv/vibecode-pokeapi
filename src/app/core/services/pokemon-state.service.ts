@@ -1,6 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { PokemonExtendedBase, PokemonBase } from '../models/pokemon.model';
+import { computed, Injectable, signal } from '@angular/core';
+import { PokemonBase, PokemonExtendedBase } from '../models/pokemon.model';
 
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -66,7 +66,12 @@ export class PokemonStateService {
     }
 
     if (!query) return data;
-    return data.filter((p) => p.name.includes(query) || p.id.toString() === query);
+
+    return data.filter((p) => {
+      const stringId = p.id.toString();
+      const paddedId = stringId.padStart(3, '0');
+      return p.name.includes(query) || stringId.includes(query) || paddedId.includes(query);
+    });
   });
 
   readonly totalItems = computed(() => this.filteredData().length);

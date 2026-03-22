@@ -9,6 +9,7 @@ import { PokemonAbilitiesComponent } from './components/pokemon-abilities.compon
 import { PokemonAudioComponent } from './components/pokemon-audio.component';
 import { PokemonMatchupsComponent } from './components/pokemon-matchups.component';
 import { PokemonMovesComponent } from './components/pokemon-moves.component';
+import { PokemonRadarStatsComponent } from './components/pokemon-radar-stats.component';
 import { PokemonSpritesComponent } from './components/pokemon-sprites.component';
 import { PokemonStatsComponent } from './components/pokemon-stats.component';
 import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.component';
@@ -22,6 +23,7 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
     PokemonAbilitiesComponent,
     PokemonSpritesComponent,
     PokemonStatsComponent,
+    PokemonRadarStatsComponent,
     PokemonMatchupsComponent,
     PokemonAudioComponent,
     PokemonMovesComponent,
@@ -226,11 +228,14 @@ import { PokemonTypeBadgeComponent } from './components/pokemon-type-badge.compo
               <app-pokemon-sprites [sprites]="pokemon()!.sprites"></app-pokemon-sprites>
             </div>
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-              <!-- Columna Izquierda -->
               <div class="flex flex-col gap-8">
                 <app-pokemon-stats [pokemon]="pokemon()!"></app-pokemon-stats>
               </div>
-              <!-- Columna Derecha -->
+
+              <div class="flex flex-col gap-8">
+                <app-pokemon-radar-stats [pokemon]="pokemon()!"></app-pokemon-radar-stats>
+              </div>
+
               <div class="flex flex-col gap-8">
                 <app-pokemon-matchups [pokemon]="pokemon()!"></app-pokemon-matchups>
               </div>
