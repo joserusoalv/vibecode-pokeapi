@@ -68,6 +68,8 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
             <app-pokemon-pagination
               [currentPage]="state.currentPage()"
               [totalPages]="state.totalPages()"
+              [totalItems]="state.totalItems()"
+              [itemsPerPage]="state.itemsPerPage()"
               (pageChange)="onPageChange($event)"
             >
             </app-pokemon-pagination>

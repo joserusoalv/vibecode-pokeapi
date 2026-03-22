@@ -101,8 +101,7 @@ import { Component, computed, input, output } from '@angular/core';
       </div>
 
       <div class="text-sm font-medium tracking-wide text-slate-500 dark:text-slate-400">
-        Page <span class="text-slate-900 dark:text-white">{{ currentPage() }}</span> of
-        <span class="text-slate-900 dark:text-white">{{ totalPages() }}</span>
+        {{ rangeLabel() }}
       </div>
     </div>
   `,
@@ -110,7 +109,18 @@ import { Component, computed, input, output } from '@angular/core';
 export class PokemonPaginationComponent {
   currentPage = input.required<number>();
   totalPages = input.required<number>();
+  totalItems = input.required<number>();
+  itemsPerPage = input.required<number>();
   pageChange = output<number>();
+
+  rangeLabel = computed(() => {
+    const total = this.totalItems();
+    if (total === 0) return '0 - 0 of 0';
+
+    const start = (this.currentPage() - 1) * this.itemsPerPage() + 1;
+    const end = Math.min(this.currentPage() * this.itemsPerPage(), total);
+    return `${start} - ${end} of ${total}`;
+  });
 
   visiblePages = computed(() => {
     const current = this.currentPage();
